@@ -1,0 +1,13 @@
+LAMMPS (29 Sep 2021 - Update 3)
+# Pour 2d granular particles into container
+
+dimension	3
+atom_style	sphere
+boundary	f f fm
+newton		off
+comm_modify	vel yes
+
+region		reg block 0 100 0 100 -50 50 units box
+region          reg cylinder y 20 30 20 -50 50 units box
+ERROR: Reuse of region ID (../domain.cpp:1752)
+Last command: region          reg cylinder y 20 30 20 -50 50 units box

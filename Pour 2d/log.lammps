@@ -1,0 +1,122 @@
+LAMMPS (29 Sep 2021 - Update 3)
+# Pour 2d granular particles into container
+
+dimension	2
+atom_style	sphere
+boundary	f fm p
+newton		off
+comm_modify	vel yes
+
+region		reg block 0 100 0 50 -0.5 0.5 units box
+create_box	1 reg
+Created orthogonal box = (0.0000000 0.0000000 -0.50000000) to (100.00000 50.000000 0.50000000)
+  2 by 1 by 1 MPI processor grid
+
+neighbor	0.2 bin
+neigh_modify	delay 0
+
+# IMPORTANT NOTE: these values of stiffness (4000) and timestep (0.001)
+# are used in this example file to produce a quick simulation and movie.
+# More appropriate values for realistic simulations would be
+# k = 4.0e5 and dt = 0.0001, as in bench/in.chute (if it were Hertzian).
+
+pair_style      gran/hertz/history 4000.0 NULL 100.0 NULL 0.5 0
+pair_coeff	* *
+
+timestep	0.001
+
+fix             1 all nve/sphere
+fix		2 all gravity 1.0 spherical 0.0 -180.0
+fix		xwalls all wall/gran hertz/history 4000.0 NULL 100.0 NULL 0 1 		xplane 0 100
+fix		ywalls all wall/gran hertz/history 4000.0 NULL 100.0 NULL 0 1 		yplane 0 NULL
+
+region          slab block 1.0 99.0 30 34.5 -0.5 0.5 units box
+fix             ins all pour 1000 1 4767548 vol 0.4 10 	        diam range 0.5 1.0 region slab
+Particle insertion: 224 every 3000 steps, 1000 by step 12001
+
+fix             3 all enforce2d
+
+compute		1 all erotate/sphere
+thermo_style	custom step atoms ke c_1 vol
+thermo		1000
+thermo_modify	lost ignore norm no
+compute_modify	thermo_temp dynamic/dof yes
+
+dump		id all atom 250 dump.pour
+
+#dump		2 all image 500 image.*.jpg type type #		zoom 1.6 adiam 1.5
+#dump_modify	2 pad 5
+
+#dump		3 all movie 500 movie.mpg type type #		zoom 1.6 adiam 1.5
+#dump_modify	3 pad 5
+
+run		25000
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 1.2
+  ghost atom cutoff = 1.2
+  binsize = 0.6, bins = 167 84 2
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair gran/hertz/history, perpetual
+      attributes: half, newton off, size, history
+      pair build: half/size/bin/newtoff
+      stencil: full/bin/2d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 5.784 | 5.784 | 5.784 Mbytes
+Step Atoms KinEng c_1 Volume 
+       0        0           -0            0         5000 
+    1000      224    202.80417            0         5000 
+    2000      224    373.00249            0         5000 
+    3000      224    599.26757            0         5000 
+    4000      448    1078.4787            0         5000 
+    5000      448    1589.4845            0         5000 
+    6000      448    1743.8281    26.918824         5000 
+WARNING: Less insertions than requested (../fix_pour.cpp:706)
+    7000      669    1818.5075    88.370238         5000 
+    8000      669    1850.1368    105.77613         5000 
+    9000      669    1757.9561    107.51791         5000 
+WARNING: Less insertions than requested (../fix_pour.cpp:706)
+   10000      886    1795.4632    80.830515         5000 
+   11000      886     1641.782    66.981464         5000 
+   12000      886    1547.8459    59.524321         5000 
+   13000     1000    1463.9531    63.227812         5000 
+   14000     1000    1283.5996    47.458987         5000 
+   15000     1000    1156.3339    47.269334         5000 
+   16000     1000    837.87525    44.763051         5000 
+   17000     1000    565.39257    45.297759         5000 
+   18000     1000    374.74838    46.183707         5000 
+   19000     1000    184.03326    30.825869         5000 
+   20000     1000    47.279944    18.343091         5000 
+   21000     1000    24.011723    13.381649         5000 
+   22000     1000    17.254278    10.720679         5000 
+   23000     1000    12.268407    9.1371514         5000 
+   24000     1000    12.132336    7.8429291         5000 
+   25000     1000    10.793308    5.0906345         5000 
+Loop time of 1.91578 on 2 procs for 25000 steps with 1000 atoms
+
+Performance: 1127477.608 tau/day, 13049.509 timesteps/s
+99.7% CPU use with 2 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.67203    | 0.6848     | 0.69756    |   1.5 | 35.75
+Neigh   | 0.19584    | 0.19759    | 0.19935    |   0.4 | 10.31
+Comm    | 0.080316   | 0.080839   | 0.081363   |   0.2 |  4.22
+Output  | 0.052646   | 0.054063   | 0.055481   |   0.6 |  2.82
+Modify  | 0.71411    | 0.72158    | 0.72905    |   0.9 | 37.67
+Other   |            | 0.1769     |            |       |  9.23
+
+Nlocal:        500.000 ave         501 max         499 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:        14.0000 ave          16 max          12 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:        1183.00 ave        1183 max        1183 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 2366
+Ave neighs/atom = 2.3660000
+Neighbor list builds = 2054
+Dangerous builds = 0
+Total wall time: 0:00:01

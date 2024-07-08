@@ -1,0 +1,197 @@
+LAMMPS (29 Sep 2021 - Update 3)
+units           si
+dimension 2
+atom_style sphere
+boundary p f p
+newton off
+comm_modify vel yes
+neighbor 0.2 bin
+neigh_modify delay 0
+
+
+region reg block 0 10 0.0 10.0 -0.15 0.15
+
+region box1 block 2 8 4 5 -0.15 0.15
+
+create_box 2 reg
+Created orthogonal box = (0.0000000 0.0000000 -0.15000000) to (10.000000 10.000000 0.15000000)
+  2 by 1 by 1 MPI processor grid
+
+create_atoms 1 random  250 398999 box1
+Created 250 atoms
+  using lattice units in orthogonal box = (0.0000000 0.0000000 -0.15000000) to (10.000000 10.000000 0.15000000)
+  create_atoms CPU = 0.001 seconds
+create_atoms 2 random 250 499899 box1
+Created 250 atoms
+  using lattice units in orthogonal box = (0.0000000 0.0000000 -0.15000000) to (10.000000 10.000000 0.15000000)
+  create_atoms CPU = 0.000 seconds
+
+group 1 type 1
+250 atoms in group 1
+group 2 type 2
+250 atoms in group 2
+
+
+
+set           type 1 diameter 0.2
+Setting atom values ...
+  250 settings made for diameter
+set           type 2 diameter 0.28
+Setting atom values ...
+  250 settings made for diameter
+set           type 1 density 1
+Setting atom values ...
+  250 settings made for density
+set           type 2 density 1
+Setting atom values ...
+  250 settings made for density
+
+pair_style soft 0.45
+pair_coeff 1 1 100.0 0.24
+pair_coeff 1 2 100.0 0.28
+pair_coeff 2 2 100.0 0.32
+
+
+thermo    10
+
+
+timestep 0.1
+
+
+thermo_style custom step  pe ke
+
+dump   mydump all atom 1 random.dump
+
+
+min_style sd
+min_modify dmax 0.01 line quadratic
+minimize 1.0e-5 1.0e-8 1000 100000
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 0.52
+  ghost atom cutoff = 0.52
+  binsize = 0.26, bins = 39 39 2
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair soft, perpetual
+      attributes: half, newton off
+      pair build: half/bin/newtoff
+      stencil: full/bin/2d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 6.429 | 6.429 | 6.429 Mbytes
+Step PotEng KinEng 
+       0    274864.03            0 
+      10    212592.52            0 
+      20     178127.2            0 
+      30    153072.03            0 
+      40    132147.06            0 
+      50    114266.84            0 
+      60    100608.12            0 
+      70    90645.662            0 
+      80    80184.686            0 
+      90    72241.899            0 
+     100     66487.38            0 
+     110     61749.34            0 
+     120    57079.511            0 
+     130    52975.224            0 
+     140    49305.485            0 
+     150    46239.911            0 
+     160    44135.218            0 
+     170      42182.6            0 
+     180    40577.274            0 
+     190    39134.134            0 
+     200    37836.143            0 
+     210    36437.289            0 
+     220    35239.745            0 
+     230    34432.931            0 
+     240    33783.467            0 
+     250    33172.906            0 
+     260    32698.095            0 
+     270    32088.456            0 
+     280    31626.653            0 
+     290    31234.829            0 
+     300    30789.922            0 
+     310    30329.076            0 
+     320    29863.678            0 
+     330    29439.712            0 
+     340    28980.928            0 
+     350    28537.968            0 
+     360    27821.871            0 
+     370    27479.148            0 
+     380    27265.239            0 
+     390    26955.605            0 
+     400    26785.861            0 
+     410    26668.419            0 
+     420    26580.572            0 
+     430    26507.737            0 
+     440     26420.63            0 
+     450    26314.245            0 
+     460    26222.598            0 
+     470    26064.325            0 
+     480    25974.137            0 
+     490    25765.989            0 
+     500    25474.649            0 
+     510    25178.034            0 
+     520    24888.991            0 
+     530    24717.221            0 
+     540    24646.817            0 
+     550    24542.098            0 
+     560    24448.042            0 
+     570    24390.825            0 
+     580    24329.892            0 
+     590    24207.231            0 
+     600    24158.984            0 
+     610    24127.719            0 
+     620      24029.8            0 
+     630    23810.184            0 
+     640    23717.868            0 
+     650    23695.949            0 
+     660    23678.787            0 
+     670      23665.2            0 
+     680    23654.399            0 
+     690    23645.701            0 
+     700     23638.55            0 
+     710    23632.569            0 
+     720    23627.634            0 
+     730    23623.602            0 
+     736    23621.565            0 
+Loop time of 0.38884 on 2 procs for 736 steps with 500 atoms
+
+93.8% CPU use with 2 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+       274864.02665178   23621.7984515841   23621.5649154666
+  Force two-norm initial, final = 86767.381 299.15177
+  Force max component initial, final = 8830.4898 85.998655
+  Final line search alpha, max atom move = 0.00016308527 0.014025114
+  Iterations, force evaluations = 736 1076
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.1113     | 0.11259    | 0.11387    |   0.4 | 28.96
+Neigh   | 0.0069904  | 0.0070731  | 0.0071559  |   0.1 |  1.82
+Comm    | 0.0064842  | 0.0066459  | 0.0068076  |   0.2 |  1.71
+Output  | 0.2278     | 0.2359     | 0.244      |   1.7 | 60.67
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.02663    |            |       |  6.85
+
+Nlocal:        250.000 ave         251 max         249 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:        41.5000 ave          43 max          40 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:        1358.00 ave        1375 max        1341 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 2716
+Ave neighs/atom = 5.4320000
+Neighbor list builds = 39
+Dangerous builds = 0
+
+write_data data.min_conf
+System init for write_data ...
+WARNING: Not all mixed pair coeffs generated from mixing. Use write_data with 'pair ij' option to store all pair coeffs. (../write_data.cpp:312)
+
+Total wall time: 0:00:00

@@ -1,0 +1,52 @@
+units           si
+dimension 3
+atom_style sphere
+boundary p f p
+newton off
+comm_modify vel yes
+neighbor 0.2 bin
+neigh_modify delay 0
+
+
+region reg block 0 10 0.0 10.0 -5 5
+
+region box1 block 3 7 3 7 -2 2
+
+create_box 2 reg
+
+create_atoms 1 random  250 398999 box1
+create_atoms 2 random 250 499899 box1
+
+group 1 type 1
+group 2 type 2
+
+
+
+set           type 1 diameter 0.2
+set           type 2 diameter 0.28
+set           type 1 density 1
+set           type 2 density 1
+
+pair_style soft 0.45
+pair_coeff 1 1 100.0 0.24
+pair_coeff 1 2 100.0 0.28
+pair_coeff 2 2 100.0 0.32
+
+
+thermo    10
+
+
+timestep 0.1
+
+thermo_style custom step  pe ke
+
+
+dump   mydump all atom 1 random.dump
+
+
+min_style sd
+min_modify dmax 0.01 line quadratic
+minimize 1.0e-5 1.0e-8 1000 100000
+
+write_data data.min_conf
+
